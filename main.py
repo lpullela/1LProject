@@ -1,82 +1,74 @@
 import nltk
-from nltk.tokenize import PunktSentenceTokenizer
+from nltk.stem import PorterStemmer
+from nltk.corpus import stopwords
 
-f = open ( 'my-test-file.txt' , 'rU')
-raw = f.read()
-tokens = nltk.word_tokenize ( raw )
-train_text = nltk.Text( tokens )
+f = open ( "DTStateofUnion2019.txt").read()
+tokens = nltk.word_tokenize ( f )
+#print ( tokens ) #list of words, each word is a string
 
-f2 = open ( 'my-sample-file.txt', 'rU')
-raw = f2.read()
-tokens = nltk.word_tokenize ( raw )
-sample_text = nltk.Text ( tokens )
+tagged_list = list()
 
-custom_sent_tokenizer = PunktSentenceTokenizer ( train_text )
-tokenized = custom_sent_tokenizer( sample_text )
+#code added on sunday, 10/10
 
-def process_content():
-    try:
-        for i in tokenized[:5]:
-            words = nltk.word_tokenize( i )
-            tagged = nltk.pos_tag( words )
-            print( tagged )
+def remove_noise ( tokens ):
+    filtered_tokens = list()
+    noise_words = set ( stopwords.words ( "english"))
+    for w in tokens:
+        if w not in noise_words:
+            filtered_tokens.append ( w )
+    return filtered_tokens
 
-    except Exception as e:
-        print ( str ( e ))
+filtered_tokens = list()
+filtered_tokens = remove_noise ( tokens )
 
-process_content()
+def stemming ( filtered_tokens ):
+    ps = PorterStemmer()
+    stemmed_words = list()
+    for w in filtered_tokens:
+        stemmed_words.append ( ps.stem ( w ) )
+    return stemmed_words
 
-#print superlatives
-superlatives = list()
-comparatives = list()
-adjectives = list()
-adj_comparative = list()
-adj_superlative = list()
-ord_adverbs = list()
+filter_and_stem_tokens = list( )
+filter_and_stem_tokens = stemming ( filtered_tokens )
 
-def superlatives():
-    for tagged_word in tagged:
-        for word in tagged_word:
-            if ( word [ 1 ] == 'RBS' )
-                superlatives.append ( word [1] )
+def pos_tagger ( filter_and_stem_tokens ):
+    pos_tag_list = nltk.pos_tag ( filter_and_stem_tokens )
+    return ( pos_tag_list )
 
-def comparatives():
-    for tagged_word in tagged:
-        for word in tagged_word:
-            if ( word [ 1 ] == 'RBR')
-                comparative.append ( word[1] )
-
-def adjectives():
-    for tagged_word in tagged:
-        for word in tagged_word:
-            if ( word [ 1 ] == 'JJ')
-                adjectives.append ( word[ 1 ] )
-
-def adj_comparative():
-    for tagged_word in tagged:
-        for word in tagged_word:
-            if ( word[1] == 'JJR')
-                adj_comparative.append( word[1])
-
-def adj_superlative():
-    for tagged_word in tagged:
-        for word in tagged_word:
-            if ( word[1] == 'JJS' )
-                adj_superlative.append ( word[1] )
-
-def ord_adverbs ():
-    for tagged_word in tagged:
-        for word in tagged_word:
-            if ( word[1] == 'RB' )
-                ord_adverbs.append( word[1] )
+tagged_list = pos_tagger( filter_and_stem_tokens )
 
 
-superlatives() #most, best
-comparatives() #better
-adjectives() #description before noun
-adj_comparative() #better
-adj_superlative() #best
-ord_adverbs() #very, silently
+def add_postag_before_word( tagged_list ):
+    tag_first_list = list()
+    for pos_tagged_token in tagged_list:
+        tag_first_list.append ( pos_tagged_token[ 1 ] + ":" + pos_tagged_token[ 0 ])
+
+    return tag_first_list
+
+def output_to_file ( tag_first_list ):
+    #outputs the words as strings into a file so that its somewhat readable
+    tagged_text_file = open ( "tagged_file.txt", "w")
+    for word in tag_first_list:
+
+        if word == ".:.":
+            tagged_text_file.write ( word + "\n\n" )
+
+        else:
+            tagged_text_file.write ( word + " ")
+
+output_to_file ( add_postag_before_word ( tagged_list ) )
+
+#reduce words to stem form
+
+
+
+
+
+
+
+
+
+
 
 
 
